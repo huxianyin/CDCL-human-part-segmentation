@@ -33,6 +33,8 @@ from human_seg.pascal_voc_human_seg_gt_7parts import human_seg_combine_argmax, h
 human_part = [0,1,2,3,4,5,6]
 human_ori_part = [0,1,2,3,4,5,6]
 seg_num = 7 # current model supports 7 parts only
+folder_name = "1_segment_results"
+check_folder_name = "1_segmentation_check"
 
 def recover_flipping_output(oriImg, part_ori_size):
     part_ori_size = part_ori_size[:, ::-1, :]
@@ -167,10 +169,7 @@ def wrapped_process(frame,params,model_params,save_path,save_tmp_path):
 if __name__ == '__main__':
     exp_name = "exp-pre"+sys.argv[1]
     gpu = sys.argv[2]
-
     os.environ["CUDA_VISIBLE_DEVICES"]=gpu
-
-
     keras_weights_file = args["model"]
     model = get_testing_model_resnet101() 
     model.load_weights(keras_weights_file)
@@ -178,26 +177,27 @@ if __name__ == '__main__':
     scale_list = []
     for item in args["scale"]:
         scale_list.append(float(item))
-
     params['scale_search'] = scale_list
-
     input_folder = args["input_folder"]
 
-    info = pd.read_csv(os.path.join(input_folder,"info.csv"))
+    #info = pd.read_csv(os.path.join(input_folder,"info.csv"))
     for per in ["A","B","C","D"]:
-        row = info[(info.exp==exp_name) & (info.per==per)]
-        if len(row)==0:continue
-        skip_count = int(row["skip_count"])
-        num_frames = int(row["num_frames"]) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        start = int(row["start"])
-        fps = int(row["fps"])
         video_path = os.path.join(input_folder,exp_name,per,"scenevideo.mp4")
-        save_dir = os.path.join(input_folder,exp_name,per,exp_name+"_"+per+"_output")
-        save_dir_tmp = os.path.join(input_folder,exp_name,per,exp_name+"_"+per+"_check")
+        if not os.path.exists(video_path):
+            print("no video data")
+            continue
+
+        save_dir = os.path.join(input_folder,exp_name,per,folder_name)
+        save_dir_tmp = os.path.join(input_folder,exp_name,per,check_folder_name)
         os.makedirs(save_dir,exist_ok=True)
         os.makedirs(save_dir_tmp,exist_ok=True)
-        print(save_dir)
+
+        skip_count=0
         cap=cv2.VideoCapture(video_path)
+        num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        fps = cap.get(cv2.CAP_PROP_FPS)
+
+        print(save_dir)
         cap.set(cv2.CAP_PROP_POS_FRAMES,skip_count)
         cnt = 0
         with loop(total=num_frames) as pbar:
