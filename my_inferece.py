@@ -167,7 +167,7 @@ def wrapped_process(frame,params,model_params,save_path,save_tmp_path):
 
 
 if __name__ == '__main__':
-    exp_name = "exp-pre"+sys.argv[1]
+    exp_name = sys.argv[1]
     gpu = sys.argv[2]
     os.environ["CUDA_VISIBLE_DEVICES"]=gpu
     keras_weights_file = args["model"]
@@ -183,6 +183,7 @@ if __name__ == '__main__':
     #info = pd.read_csv(os.path.join(input_folder,"info.csv"))
     for per in ["A","B","C","D"]:
         video_path = os.path.join(input_folder,exp_name,per,"scenevideo.mp4")
+        print(video_path)
         if not os.path.exists(video_path):
             print("no video data")
             continue
@@ -207,9 +208,8 @@ if __name__ == '__main__':
                 cnt+=1
                 if cnt>num_frames:break
                 pbar.update(1)
-                save_name = int((start + cnt/fps)*1000)
-                save_path = os.path.join(save_dir,str(save_name)+".jpg")
-                save_path_tmp = os.path.join(save_dir_tmp,str(save_name)+".jpg")
+                save_path = os.path.join(save_dir,str(cnt)+".jpg")
+                save_path_tmp = os.path.join(save_dir_tmp,str(cnt)+".jpg")
                 if os.path.exists(save_path):continue
                 wrapped_process(frame,params,model_params,save_path,save_path_tmp)
   
