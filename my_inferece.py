@@ -161,14 +161,15 @@ def wrapped_process(frame,params,model_params,save_path,save_tmp_path):
     seg_max_thres = (seg_max > 0.1).astype(np.uint8)
     seg_argmax *= seg_max_thres
     seg_canvas = human_seg_combine_argmax_rgb(seg_argmax)
-    merge_canvas = cv2.addWeighted(seg_canvas,0.6,frame,0.4,0)
+    #merge_canvas = cv2.addWeighted(seg_canvas,0.6,frame,0.4,0)
     cv2.imwrite(save_path, seg_canvas) 
-    cv2.imwrite(save_tmp_path, merge_canvas) 
+    #cv2.imwrite(save_tmp_path, merge_canvas) 
 
 
 if __name__ == '__main__':
-    exp_name = sys.argv[1]
-    gpu = sys.argv[2]
+    exp_name = sys.argv[1] 
+    per = sys.argv[2]
+    gpu = sys.argv[3]
     os.environ["CUDA_VISIBLE_DEVICES"]=gpu
     keras_weights_file = args["model"]
     model = get_testing_model_resnet101() 
@@ -181,36 +182,36 @@ if __name__ == '__main__':
     input_folder = args["input_folder"]
 
     #info = pd.read_csv(os.path.join(input_folder,"info.csv"))
-    for per in ["A","B","C","D"]:
-        video_path = os.path.join(input_folder,exp_name,per,"scenevideo.mp4")
-        print(video_path)
-        if not os.path.exists(video_path):
-            print("no video data")
-            continue
+    #for per in ["A","B","C","D"]:
+    video_path = os.path.join(input_folder,exp_name,per,"scenevideo.mp4")
+    print(video_path)
+    if not os.path.exists(video_path):
+        print("no video data")
+        continue
 
-        save_dir = os.path.join(input_folder,exp_name,per,folder_name)
-        save_dir_tmp = os.path.join(input_folder,exp_name,per,check_folder_name)
-        os.makedirs(save_dir,exist_ok=True)
-        os.makedirs(save_dir_tmp,exist_ok=True)
+    save_dir = os.path.join(input_folder,exp_name,per,folder_name)
+    save_dir_tmp = os.path.join(input_folder,exp_name,per,check_folder_name)
+    os.makedirs(save_dir,exist_ok=True)
+    os.makedirs(save_dir_tmp,exist_ok=True)
 
-        skip_count=0
-        cap=cv2.VideoCapture(video_path)
-        num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-        fps = cap.get(cv2.CAP_PROP_FPS)
+    skip_count=0
+    cap=cv2.VideoCapture(video_path)
+    num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+    fps = cap.get(cv2.CAP_PROP_FPS)
 
-        print(save_dir)
-        cap.set(cv2.CAP_PROP_POS_FRAMES,skip_count)
-        cnt = 0
-        with loop(total=num_frames) as pbar:
-            while(cap.isOpened()):
-                ret,frame = cap.read()
-                if not ret:break
-                cnt+=1
-                if cnt>num_frames:break
-                pbar.update(1)
-                save_path = os.path.join(save_dir,str(cnt)+".jpg")
-                save_path_tmp = os.path.join(save_dir_tmp,str(cnt)+".jpg")
-                if os.path.exists(save_path):continue
-                wrapped_process(frame,params,model_params,save_path,save_path_tmp)
-  
+    print(save_dir)
+    cap.set(cv2.CAP_PROP_POS_FRAMES,skip_count)
+    cnt = 0
+    with loop(total=num_frames) as pbar:
+        while(cap.isOpened()):
+            ret,frame = cap.read()
+            if not ret:break
+            cnt+=1
+            if cnt>num_frames:break
+            pbar.update(1)
+            save_path = os.path.join(save_dir,str(cnt)+".jpg")
+            save_path_tmp = os.path.join(save_dir_tmp,str(cnt)+".jpg")
+            if os.path.exists(save_path):continue
+            wrapped_process(frame,params,model_params,save_path,save_path_tmp)
+
 
