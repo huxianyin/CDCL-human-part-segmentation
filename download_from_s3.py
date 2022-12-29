@@ -2,8 +2,8 @@ import subprocess
 import sys
 import os
 
-cmd_list = ["aws","s3","cp"]
-src_root = "input"
+cmd_list = ["aws","s3","cp" ]
+src_root = "./input"
 dst_root = "s3://wg1-4/data/"
 download_file = "scenevideo.mp4"
 folder_dict = {('exp1', 'A'): '20221221T043026Z',
@@ -33,8 +33,8 @@ if __name__ == "__main__":
     exp = sys.argv[1]
     per = sys.argv[2]
     src_file = os.path.join(dst_root,exp,per,folder_dict[(exp,per)],download_file)
-    dst_file = os.path.join(src_root,exp,per,download_file)
+    dst_file = os.path.join(src_root,exp,per,download_file )
     params_list = [src_file,dst_file]
-    cmd = cmd_list + params_list
+    cmd = cmd_list + params_list 
     print("Run : " + " ".join(cmd))
     list_files = subprocess.run(cmd)
