@@ -144,11 +144,12 @@ def identity_block(input_tensor, kernel_size, filters, stage, block):
     
     """
     eps = 1.1e-5
+    bn_axis = 3
     
-    if K.image_dim_ordering() == 'tf':
-        bn_axis = 3
-    else:
-        bn_axis = 1
+    # if K.image_dim_ordering() == 'tf':
+    #     bn_axis = 3
+    # else:
+    #     bn_axis = 1
     
     nb_filter1, nb_filter2, nb_filter3 = filters
     conv_name_base = 'res' + str(stage) + block + '_branch'
@@ -190,11 +191,12 @@ def conv_block(input_tensor, kernel_size, filters, stage, block, strides=(2, 2))
     
     """
     eps = 1.1e-5
+    bn_axis = 3
     
-    if K.image_dim_ordering() == 'tf':
-        bn_axis = 3
-    else:
-        bn_axis = 1
+    # if K.image_dim_ordering() == 'tf':
+    #     bn_axis = 3
+    # else:
+    #     bn_axis = 1
     
     nb_filter1, nb_filter2, nb_filter3 = filters
     conv_name_base = 'res' + str(stage) + block + '_branch'
@@ -229,10 +231,11 @@ def ResNet101_graph(img_input, weight_decay):
     eps = 1.1e-5
 
     branch = 0
-    if K.image_data_format() == 'channels_last':
-        bn_axis = 3
-    else:
-        bn_axis = 1
+    bn_axis = 3
+    # if K.image_data_format() == 'channels_last':
+    #     bn_axis = 3
+    # else:
+    #     bn_axis = 1
     # C1 --------------------------------------------------
     x = ZeroPadding2D((3, 3))(img_input)
     x = Conv2D(64, (7, 7), strides=(2, 2), name='conv1', use_bias=False)(x)
