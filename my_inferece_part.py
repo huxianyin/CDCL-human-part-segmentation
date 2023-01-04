@@ -179,11 +179,6 @@ if __name__ == '__main__':
         scale_list.append(float(item))
     params['scale_search'] = scale_list
     input_folder = args["input_folder"]
-    info = pd.read_csv(os.path.join(args["input_folder"],"info2.csv"))
-    start_frames = info[(info.exp==exp_name) & (info.per==per)].iloc[0]["start"]
-    end_frames = info[(info.exp==exp_name) & (info.per==per)].iloc[0]["end"]
-    fps = info[(info.exp==exp_name) & (info.per==per)].iloc[0]["fps"]
-    print(start_frames,end_frames)
 
     video_path = os.path.join(input_folder,exp_name,per,"scenevideo.mp4")
     print(video_path)
@@ -195,8 +190,15 @@ if __name__ == '__main__':
         os.makedirs(save_dir,exist_ok=True)
         os.makedirs(save_dir_tmp,exist_ok=True)
 
+        cap=cv2.VideoCapture(video_path)        
+
+        info = pd.read_csv(os.path.join(args["input_folder"],"info2.csv"))
+        start_frames = 0 #info[(info.exp==exp_name) & (info.per==per)].iloc[0]["start"]
+        end_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT) #info[(info.exp==exp_name) & (info.per==per)].iloc[0]["end"]
+        fps = info[(info.exp==exp_name) & (info.per==per)].iloc[0]["fps"]
+        print(start_frames,end_frames)
+
         skip_count=start_frames
-        cap=cv2.VideoCapture(video_path)
         num_frames = end_frames-start_frames
 
         print(save_dir)

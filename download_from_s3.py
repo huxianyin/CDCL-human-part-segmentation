@@ -2,7 +2,6 @@ import subprocess
 import sys
 import os
 
-cmd_list = ["aws","s3","cp" ]
 src_root = "./input"
 dst_root = "s3://wg1-4/data/"
 download_file = "scenevideo.mp4"
@@ -34,7 +33,19 @@ if __name__ == "__main__":
     per = sys.argv[2]
     src_file = os.path.join(dst_root,exp,per,folder_dict[(exp,per)],download_file)
     dst_file = os.path.join(src_root,exp,per,download_file )
+    if not os.path.exists(dst_file):
+	    params_list = [src_file,dst_file]
+	    cmd_list = ["aws","s3","cp" ]
+	    cmd = cmd_list + params_list 
+	    print("Run : " + " ".join(cmd))
+	    list_files = subprocess.run(cmd)
+
+    src_file = os.path.join(dst_root,exp,per, "1_segment_results")
+    dst_file = os.path.join(src_root,exp,per,"1_segment_results")
+    cmd_list = ["aws","s3","sync" ]
     params_list = [src_file,dst_file]
     cmd = cmd_list + params_list 
     print("Run : " + " ".join(cmd))
     list_files = subprocess.run(cmd)
+
+

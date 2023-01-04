@@ -7,7 +7,7 @@ src_root = "input"
 dst_root = "s3://wg1-4/data/"
 map_dict = {
     "output":"1_segment_results",
-    "check":"1_segmentation_check"
+    #"check":"1_segmentation_check"
 }
 
 if __name__ == "__main__":
